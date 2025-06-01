@@ -1,24 +1,80 @@
-//
+import React, { useState } from "react";
+import { PROPERTYLISTINGSAMPLE, PropertyProps } from "@/constants";
+import Pill from "@/components/Pill";
 
-import React from "react";
-import Card from "../components/common/Card";
-import Button from "../components/common/Button";
-
-const sampleProperty = {
-  title: "Cozy Apartment in City Center",
-  description: "A beautiful apartment close to all main attractions.",
-  imageUrl: "/assets/placeholder-property.jpg",
-};
+const filters = [
+  "Top Villa",
+  "Self Checkin",
+  "Pool",
+  "Free Parking",
+  "Pet Friendly",
+];
 
 export default function Home() {
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+
+  const filteredProperties = activeFilter
+    ? PROPERTYLISTINGSAMPLE.filter((property) =>
+        property.category.some(
+          (cat) => cat.toLowerCase() === activeFilter.toLowerCase()
+        )
+      )
+    : PROPERTYLISTINGSAMPLE;
+
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Welcome to ALX Listing App</h1>
-      <Card {...sampleProperty} />
-      <div className="mt-4">
-        <Button label="Book Now" onClick={() => alert("Booked!")} />
-      </div>
-      <h1>othmane laghlimi</h1>
+    <div>
+      {/* Hero Section */}
+      <section
+        className="h-64 md:h-96 bg-cover bg-center flex flex-col justify-center items-center text-white"
+        style={{ backgroundImage: `url('/hero-bg.jpg')` }}
+      >
+        <h1 className="text-4xl font-bold drop-shadow-md">
+          Find your favorite place here!
+        </h1>
+        <p className="mt-2 text-lg drop-shadow-md">
+          The best prices for over 2 million properties worldwide.
+        </p>
+      </section>
+
+      {/* Filters */}
+      <section className="flex space-x-4 px-6 py-4 overflow-x-auto bg-white">
+        {filters.map((filter) => (
+          <Pill
+            key={filter}
+            label={filter}
+            active={activeFilter === filter}
+            onClick={() =>
+              setActiveFilter((prev) => (prev === filter ? null : filter))
+            }
+          />
+        ))}
+      </section>
+
+      {/* Listings */}
+      <section className="px-6 py-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {filteredProperties.map((property) => (
+          <div
+            key={property.name}
+            className="bg-white rounded-lg shadow-md overflow-hidden"
+          >
+            <img
+              src={property.image}
+              alt={property.name}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <h2 className="font-semibold text-lg">{property.name}</h2>
+              <p className="text-sm text-gray-600">
+                {property.address.city}, {property.address.country}
+              </p>
+              <p className="mt-2 font-bold text-blue-600">
+                ${property.price} / night
+              </p>
+              <p className="text-yellow-500">⭐ {property.rating}</p>
+            </div>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }
